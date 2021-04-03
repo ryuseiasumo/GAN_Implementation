@@ -9,21 +9,21 @@ torch.manual_seed(1234)
 class Generator(torch.nn.Module):
     def __init__(self, z_input_size = 100, nch_g = 128, nch = 1): #入力ベクトルの次元数は100
         super().__init__()
-        #1x1x100次元の入力ベクトルから、64x64x3の画像を生成
+        #1x1x100次元の入力ベクトルから、28x28x1の画像を生成
         self.cnvt1 = nn.ConvTranspose2d(z_input_size, nch_g * 4, 3, 1, 0, bias=False)
-        # torch.nn.init.xavier_uniform_(self.cnvt1.weight) #重みの初期化
+        torch.nn.init.xavier_uniform_(self.cnvt1.weight) #重みの初期化
         self.bn1 = nn.BatchNorm2d(nch_g * 4)
 
         self.cnvt2 = nn.ConvTranspose2d(nch_g * 4, nch_g * 2, 3, 2, 0, bias=False)
-        # torch.nn.init.xavier_uniform_(self.cnvt2.weight) #重みの初期化
+        torch.nn.init.xavier_uniform_(self.cnvt2.weight) #重みの初期化
         self.bn2 = nn.BatchNorm2d(nch_g * 2)
 
         self.cnvt3 = nn.ConvTranspose2d(nch_g * 2, nch_g, 4, 2, 1, bias=False)
-        # torch.nn.init.xavier_uniform_(self.cnvt3.weight) #重みの初期化
+        torch.nn.init.xavier_uniform_(self.cnvt3.weight) #重みの初期化
         self.bn3 = nn.BatchNorm2d(nch_g)
 
         self.cnvt4 = nn.ConvTranspose2d(nch_g, nch, 4, 2, 1, bias=False)
-        # torch.nn.init.xavier_uniform_(self.cnvt4.weight) #重みの初期化
+        torch.nn.init.xavier_uniform_(self.cnvt4.weight) #重みの初期化
 
     def forward(self, z_input):
         x1 = self.bn1(self.cnvt1(z_input))

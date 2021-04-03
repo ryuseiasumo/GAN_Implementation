@@ -10,20 +10,20 @@ torch.manual_seed(1234)
 class Discriminator(torch.nn.Module):
     def __init__(self, nch = 1, nch_d = 128):
         super().__init__()
-        # 3x64x64 → 1次元のスカラーに変換
+        # 1x28x28 → 1次元のスカラーに変換
         self.cnv1 = nn.Conv2d(nch, nch_d, 4, 2, 1)
-        # torch.nn.init.xavier_uniform_(self.cnv1.weight) #重みの初期化
+        torch.nn.init.xavier_uniform_(self.cnv1.weight) #重みの初期化
 
         self.cnv2 = nn.Conv2d(nch_d, nch_d*2, 4, 2, 1)
-        # torch.nn.init.xavier_uniform_(self.cnv2.weight) #重みの初期化
+        torch.nn.init.xavier_uniform_(self.cnv2.weight) #重みの初期化
         self.bn2 = nn.BatchNorm2d(nch_d*2)
 
         self.cnv3 = nn.Conv2d(nch_d*2, nch_d*4, 3, 2, 0)
-        # torch.nn.init.xavier_uniform_(self.cnv3.weight) #重みの初期化
+        torch.nn.init.xavier_uniform_(self.cnv3.weight) #重みの初期化
         self.bn3 = nn.BatchNorm2d(nch_d*4)
 
         self.cnv4 = nn.Conv2d(nch_d*4, 1, 3, 1, 0)
-        # torch.nn.init.xavier_uniform_(self.cnv4.weight) #重みの初期化
+        torch.nn.init.xavier_uniform_(self.cnv4.weight) #重みの初期化
 
 
     def forward(self, img_input):
@@ -40,7 +40,6 @@ class Discriminator(torch.nn.Module):
         out = torch.sigmoid(x4)
 
         return out.squeeze()
-
 
 
 from torchsummary import summary
