@@ -43,6 +43,8 @@ def set_model(): #モデル等の用意
 
     G_optimizer  = torch.optim.AdamW(Generator.parameters(), lr=0.001)
     D_optimizer  = torch.optim.AdamW(Discriminator.parameters(), lr=0.001)
+    # G_optimizer  = torch.optim.AdamW(Generator.parameters(), lr=0.001, betas = (beta1,0.999), weight_decay = 1e-5)
+    # D_optimizer  = torch.optim.AdamW(Discriminator.parameters(), lr=0.001, betas = (beta1,0.999), weight_decay = 1e-5)
 
     loss_function = nn.BCELoss() #バイナリクロスエントロピーloss
 

@@ -4,30 +4,26 @@ import torchvision
 from torchvision import transforms
 import numpy as np
 import torch.nn.functional as F
-torch.manual_seed(0)
+torch.manual_seed(1234)
 
 
 class Discriminator(torch.nn.Module):
-    def __init__(self):
+    def __init__(self, nch = 1, nch_d = 128):
         super().__init__()
         # 3x64x64 → 1次元のスカラーに変換
-        self.cnv1 = nn.Conv2d(1, 32, 4, 2, 1, bias=False)
-        torch.nn.init.xavier_uniform_(self.cnv1.weight) #重みの初期化
+        self.cnv1 = nn.Conv2d(nch, nch_d, 4, 2, 1)
+        # torch.nn.init.xavier_uniform_(self.cnv1.weight) #重みの初期化
 
-        self.cnv2 = nn.Conv2d(32, 64, 4, 2, 1, bias=False)
-        torch.nn.init.xavier_uniform_(self.cnv2.weight) #重みの初期化
-        self.bn2 = nn.BatchNorm2d(64)
+        self.cnv2 = nn.Conv2d(nch_d, nch_d*2, 4, 2, 1)
+        # torch.nn.init.xavier_uniform_(self.cnv2.weight) #重みの初期化
+        self.bn2 = nn.BatchNorm2d(nch_d*2)
 
-        self.cnv3 = nn.Conv2d(64, 128, 4, 2, 1, bias=False)
-        torch.nn.init.xavier_uniform_(self.cnv3.weight) #重みの初期化
-        self.bn3 = nn.BatchNorm2d(128)
+        self.cnv3 = nn.Conv2d(nch_d*2, nch_d*4, 3, 2, 0)
+        # torch.nn.init.xavier_uniform_(self.cnv3.weight) #重みの初期化
+        self.bn3 = nn.BatchNorm2d(nch_d*4)
 
-        self.cnv4 = nn.Conv2d(128, 256, 4, 2, 1, bias=False)
-        torch.nn.init.xavier_uniform_(self.cnv4.weight) #重みの初期化
-        self.bn4 = nn.BatchNorm2d(256)
-
-        self.cnv5 = nn.Conv2d(256, 1, 1, 1, 0, bias=False) #fcの代わり 1x1x1になる
-        torch.nn.init.xavier_uniform_(self.cnv5.weight) #重みの初期化
+        self.cnv4 = nn.Conv2d(nch_d*4, 1, 3, 1, 0)
+        # torch.nn.init.xavier_uniform_(self.cnv4.weight) #重みの初期化
 
 
     def forward(self, img_input):
@@ -40,15 +36,10 @@ class Discriminator(torch.nn.Module):
         x3 = self.bn3(self.cnv3(x2))
         x3 = F.leaky_relu(x3,0.2, inplace=True)
 
-        x4 = self.bn4(self.cnv4(x3))
-        x4 = F.leaky_relu(x4,0.2, inplace=True)
+        x4 = self.cnv4(x3)
+        out = torch.sigmoid(x4)
 
-        x5 = self.cnv5(x4)
-        out = torch.sigmoid(x5)
-
-        return out
-
-
+        return out.squeeze()
 
 
 

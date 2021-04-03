@@ -29,10 +29,10 @@ class Trainer:
 
         self.z_input_size = z_input_size #潜在特徴100次元ベクトルz
         self.batch_size = batch_size
-
-        self.loss_function = loss_function.to(self.device)
         self.ones = torch.ones(batch_size).reshape(batch_size, 1).to(self.device) # 正例 1
         self.zeros = torch.zeros(batch_size).reshape(batch_size, 1).to(self.device) # 負例 0
+
+        self.loss_function = loss_function.to(self.device)
         self.num_epochs = num_epochs
 
         # 途中結果の確認用の潜在特徴z
@@ -49,10 +49,14 @@ class Trainer:
 
 
         # running_loss, correct, total = 0, 0, 0
-        # l = len(train_loader)
+        l = len(train_loader)
 
-        for real_img, _ in tqdm(train_loader):
-            batch_len = len(real_img)
+        for i, data in tqdm(enumerate(train_loader),total = l):
+        # for real_img, _ in tqdm(train_loader):
+            # batch_len = len(real_img)
+
+            real_img = data[0].to(self.device)
+            batch_len = real_img.size(0)
 
             if torch.cuda.is_available():
                 real_img = Variable(real_img.cuda(), volatile=True)
@@ -62,7 +66,7 @@ class Trainer:
             # print(real_img.shape)
             # ========== Generatorの訓練 ==========
             # 偽画像を生成
-            z = torch.randn(batch_len, self.z_input_size, 1, 1).to(self.device) #バッチサイズ分だけ、適当な潜在変数を用意
+            z = torch.randn(batch_len, self.z_input_size, 1, 1).to(self.device) #バッチサイズ分だけ、標準正規分布から潜在変数を用意
             fake_img = self.model_G(z) #偽画像生成
 
             # print(fake_img.shape)
